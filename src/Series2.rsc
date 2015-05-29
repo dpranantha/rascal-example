@@ -29,7 +29,11 @@ keyword Keywords = "swap" | "test" | "foreach";
  */
   
 Statement desugar((Statement)`swap <Id x>, <Id y>;`)
-  = /* you should replace this */ dummyStat();
+  = (Statement) `(function() {
+  				'   var tmp = x;
+  				'   x = y;
+  				'   y = tmp;
+  				'})();`;
 
 test bool testSwap()
   = desugar((Statement)`swap x, y;`)
@@ -44,7 +48,11 @@ test bool testSwap()
  */
 
 Statement desugar((Statement)`test <Expression x> should be <Expression y>;`)
-  = /* you should replace this */ dummyStat();
+  = (Statement) `(function(actual, expected) {
+  				'	if(actual !== expected) {
+  				'		console.log("Test failed; expected: " + expected + "; got: " + actual);
+  				'	}
+  				'})(<Expression x>, <Expression y>);`;
   
 test bool testTest()
   = desugar((Statement)`test 3 * 3 should be 9;`)
