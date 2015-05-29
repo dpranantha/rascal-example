@@ -68,7 +68,12 @@ test bool testTest()
  
   
 Statement desugar((Statement)`foreach (var <Id x> in <Expression e>) <Statement s>`)
-  = /* you should replace this */ dummyStat();
+  = (Statement)`(function(arr) {
+  			    '  for (var i = 0; i \< arr.length; i++) { 
+                '    var <Id x> = arr[i]; 
+                '    <Statement s>
+                '  }
+                '})(<Expression e>);`;
   
 
 test bool testForeach()
@@ -85,8 +90,14 @@ test bool testForeach()
  */
  
 
-Expression desugar((Expression)`<Id param> =\> <Expression body>`)
-  = /* you should replace this */ dummyExp();
+Expression desugar((Expression)`<Id param> =\> <Expression body>`){
+  Expression e = replaceThis(body);
+  return (Expression) `(function (_this) {
+  					  '   return function (<Id param>) {
+  					  '				return <Expression e>;
+  					  '	  };
+  					  '})(this)`;
+}
 
 Expression replaceThis(Expression e) {
   return top-down-break visit (e) {
@@ -122,7 +133,6 @@ Expression desugar((Expression)`[ <Expression r> | <{Generator ","}+ gens> ]`) {
 } 
  
 Expression dummyExp() = (Expression)`NOT_YET_IMPLEMENTED`;
-Statement dummyStat() = (Statement)`NOT_YET_IMPLEMENTED;`;
 
  
 

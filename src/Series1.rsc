@@ -87,7 +87,7 @@ test bool testTodo()
  */
  
 Statement desugar((Statement)`unless (<Expression cond>) <Statement body>`)
-  = /* you should replace this */ dummyStat();
+  = (Statement) `if (!(<Expression cond>)) print(x);`;
  
 
 test bool testUnless()
@@ -99,7 +99,7 @@ test bool testUnless()
  */
 
 Statement desugar((Statement)`repeat <Statement stat> until (<Expression cond>);`)
-  = /* you should replace this */ dummyStat();
+  = (Statement) `do <Statement stat> while (!(<Expression cond>));`;
 
 test bool testRepeat()
   = desugar((Statement)`repeat {print(i); i--;} until (i == 0);`)
@@ -112,7 +112,9 @@ test bool testRepeat()
 
 Statement desugar((Statement)`assert <Expression e>: <String msg>;`) {
   // don't forget to convert the expression to a string!
-  return /* you should replace this */ dummyStat();
+  String e_str = jsString(e);
+  return (Statement) `if (!(<Expression e>))
+  					 '   throw "Assertion " + <String e_str> + " failed: " + <String msg>;`;
 }
 
 
@@ -123,7 +125,4 @@ test bool testAssert()
   
 String jsString(Expression e) = parse(#String, "\"<unparse(e)>\""); 
 
-
-Expression dummyExp() = (Expression)`NOT_YET_IMPLEMENTED`;
-Statement dummyStat() = (Statement)`NOT_YET_IMPLEMENTED;`;
 
